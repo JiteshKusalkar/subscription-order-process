@@ -11,7 +11,12 @@ import Stepper from "@material-ui/core/Stepper";
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 
-import { SubscriptionForm, UserDetailsForm, CreditCardDetailsForm } from "../../components/Form";
+import {
+  SubscriptionForm,
+  UserDetailsForm,
+  CreditCardDetailsForm,
+  ConfirmationPage
+} from "../../components/Form";
 
 interface ISubscriptionProcessFormProps extends WithStyles {}
 interface ISubscriptionProcessFormState {
@@ -32,8 +37,7 @@ const styles = (theme: Theme) =>
     },
     form: { margin: "0 auto" },
     paper: {
-      padding: theme.spacing(2),
-      textAlign: "center",
+      padding: theme.spacing(5),
       color: theme.palette.text.secondary
     }
   });
@@ -70,16 +74,37 @@ class SubscriptionOrderProcessForm extends React.Component<
       },
       creditCardDetails: {
         number: "",
-        expDate: {
-          month: null,
-          year: new Date().getFullYear()
-        },
+        expMonth: "",
+        expYear: "",
         cvv: ""
       }
     }
   });
 
   handleActiveStep = (activeStep: number) => this.setState({ activeStep });
+
+  onSubmit = (
+    type: string,
+    data: ISubscriptionDetails | IUserDetails | ICreditCardDetails
+  ) => {
+    this.setState(prevState => ({
+      ...prevState,
+      activeStep: prevState.activeStep + 1,
+      data: {
+        ...this.getEmptyState().data,
+        [type]: data
+      }
+    }));
+  };
+
+  onPrev = (activeStep: number) => () => this.setState({ activeStep });
+
+  onConfirmOrder = (e?: React.SyntheticEvent<HTMLFormElement>) => {
+    if (e) {
+      e.preventDefault();
+    }
+    console.log(`Here's the data`, this.state.data);
+  }
 
   renderActiveForm = () => {
     const { activeStep, data } = this.state;
@@ -109,22 +134,14 @@ class SubscriptionOrderProcessForm extends React.Component<
           />
         );
       default:
-        return "Confirmation page";
+        return (
+          <ConfirmationPage
+            onSubmit={this.onConfirmOrder}
+            onPrev={this.onPrev(2)}
+          />
+        );
     }
   };
-
-  onSubmit = (
-    type: string,
-    data: ISubscriptionDetails | IUserDetails | ICreditCardDetails
-  ) => {
-    this.setState(prevState => ({
-      ...prevState,
-      activeStep: prevState.activeStep + 1,
-      [type]: data
-    }));
-  };
-
-  onPrev = (activeStep: number) => () => this.setState({ activeStep });
 
   render() {
     const { classes } = this.props;

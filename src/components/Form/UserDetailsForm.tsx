@@ -1,8 +1,9 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { Formik } from "formik";
+import { Formik, FormikProps } from "formik";
 import { TextField, Grid } from "@material-ui/core";
+import * as Yup from "yup";
 
 interface IUserDetailsFormProps {
   formData: IUserDetails;
@@ -23,10 +24,22 @@ const useStyles = makeStyles((theme: Theme) =>
     footer: {
       display: "flex",
       justifyContent: "space-between",
-      padding: 30
+      padding: "30px 0"
+    },
+    header: {
+      textAlign: "center"
     }
   })
 );
+
+const validationSchema = Yup.object().shape({
+  lastName: Yup.string().required("Required"),
+  firstName: Yup.string().required("Required"),
+  email: Yup.string()
+    .email("Invalid email")
+    .required("Required"),
+  streetAddress: Yup.string().required("Required")
+});
 
 const UserForm: React.FC<IUserDetailsFormProps> = (
   props: IUserDetailsFormProps
@@ -35,11 +48,19 @@ const UserForm: React.FC<IUserDetailsFormProps> = (
   const classes = useStyles();
   const formProps = {
     initialValues: formData,
+    validationSchema,
     onSubmit: (values: IUserDetails) => onSubmit("userDetails", values)
   };
 
-  const renderForm = (formProps: any) => {
-    const { values, handleChange, handleSubmit } = formProps;
+  const renderForm = (formProps: FormikProps<IUserDetails>) => {
+    const {
+      errors,
+      values,
+      touched,
+      handleChange,
+      handleSubmit,
+      setTouched
+    } = formProps;
     return (
       <form noValidate autoComplete="off" onSubmit={handleSubmit}>
         <Grid item xs={12}>
@@ -51,7 +72,9 @@ const UserForm: React.FC<IUserDetailsFormProps> = (
             className={classes.textField}
             value={values.lastName || ""}
             onChange={handleChange}
-            helperText="Last Name"
+            onBlur={() => setTouched({ ...touched, lastName: true })}
+            helperText={touched.lastName ? errors.lastName : ""}
+            error={touched.lastName && !!errors.lastName}
             margin="normal"
           />
           <TextField
@@ -62,7 +85,9 @@ const UserForm: React.FC<IUserDetailsFormProps> = (
             className={classes.textField}
             value={values.firstName || ""}
             onChange={handleChange}
-            helperText="First Name"
+            onBlur={() => setTouched({ ...touched, firstName: true })}
+            helperText={touched.firstName ? errors.firstName : ""}
+            error={touched.firstName && !!errors.firstName}
             margin="normal"
           />
           <TextField
@@ -74,8 +99,24 @@ const UserForm: React.FC<IUserDetailsFormProps> = (
             className={classes.textField}
             value={values.email || ""}
             onChange={handleChange}
-            helperText="Email"
+            onBlur={() => setTouched({ ...touched, email: true })}
+            helperText={touched.email ? errors.email : ""}
+            error={touched.email && !!errors.email}
             margin="normal"
+          />
+          <TextField
+            id="streetAddress"
+            label="Street Address"
+            name="streetAddress"
+            required
+            className={classes.textField}
+            value={values.streetAddress || ""}
+            onChange={handleChange}
+            onBlur={() => setTouched({ ...touched, streetAddress: true })}
+            helperText={touched.streetAddress ? errors.streetAddress : ""}
+            error={touched.streetAddress && !!errors.streetAddress}
+            margin="normal"
+            fullWidth
           />
         </Grid>
         <Grid item xs={12} className={classes.footer}>
@@ -90,7 +131,7 @@ const UserForm: React.FC<IUserDetailsFormProps> = (
 
   return (
     <>
-      <header>Personal Details</header>
+      <header className={classes.header}>Personal Details</header>
       <Formik {...formProps}>{renderForm}</Formik>
     </>
   );

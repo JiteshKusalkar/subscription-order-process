@@ -1,8 +1,9 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { Formik } from "formik";
+import { Formik, FormikProps } from "formik";
 import { MenuItem, TextField, Grid } from "@material-ui/core";
+import * as Yup from "yup";
 
 interface ISubscriptionDetailsFormProps {
   formData: ISubscriptionDetails;
@@ -18,15 +19,25 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     textField: {
       marginLeft: theme.spacing(1),
-      marginRight: theme.spacing(1)
+      marginRight: theme.spacing(1),
+      width: '30%',
     },
     footer: {
       display: "flex",
       justifyContent: "space-between",
-      padding: 30
+      padding: "30px 0"
+    },
+    header: {
+      textAlign: "center"
     }
   })
 );
+
+const validationSchema = Yup.object().shape({
+  duration: Yup.number().required("Require"),
+  size: Yup.number().required("Required"),
+  payment: Yup.string().required("Required")
+});
 
 const SubscriptionForm: React.FC<ISubscriptionDetailsFormProps> = (
   props: ISubscriptionDetailsFormProps
@@ -35,8 +46,9 @@ const SubscriptionForm: React.FC<ISubscriptionDetailsFormProps> = (
   const classes = useStyles();
   const formProps = {
     initialValues: formData,
+    validationSchema,
     onSubmit: (values: ISubscriptionDetails) =>
-      onSubmit("subscriptionData", values)
+      onSubmit("subscriptionDetails", values)
   };
 
   const options = {
@@ -56,8 +68,8 @@ const SubscriptionForm: React.FC<ISubscriptionDetailsFormProps> = (
     payment: [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }]
   };
 
-  const renderForm = (formProps: any) => {
-    const { values, handleChange, handleSubmit } = formProps;
+  const renderForm = (formProps: FormikProps<ISubscriptionDetails>) => {
+    const { errors, values, touched, handleChange, handleSubmit, setTouched } = formProps;
     return (
       <form noValidate autoComplete="off" onSubmit={handleSubmit}>
         <Grid item xs={12}>
@@ -70,7 +82,9 @@ const SubscriptionForm: React.FC<ISubscriptionDetailsFormProps> = (
             className={classes.textField}
             value={values ? values.duration : ""}
             onChange={handleChange}
-            helperText="Please select your duration"
+            onBlur={() => setTouched({ ...touched, duration: true })}
+            helperText={touched.duration ? errors.duration : ""}
+            error={touched.duration && !!errors.duration}
             margin="normal"
           >
             {options.duration.map(duration => (
@@ -87,8 +101,9 @@ const SubscriptionForm: React.FC<ISubscriptionDetailsFormProps> = (
             required
             className={classes.textField}
             value={values ? values.size : ""}
-            onChange={handleChange}
-            helperText="Please select the size in cloud"
+            onBlur={() => setTouched({ ...touched, size: true })}
+            helperText={touched.size ? errors.size : ""}
+            error={touched.size && !!errors.size}
             margin="normal"
           >
             {options.size.map(size => (
@@ -106,7 +121,9 @@ const SubscriptionForm: React.FC<ISubscriptionDetailsFormProps> = (
             className={classes.textField}
             value={values ? values.payment : false}
             onChange={handleChange}
-            helperText="Want to do upfront payment?"
+            onBlur={() => setTouched({ ...touched, payment: true })}
+            helperText={touched.payment ? errors.payment : ""}
+            error={touched.payment && !!errors.payment}
             margin="normal"
           >
             {options.payment.map(payment => (
@@ -128,7 +145,7 @@ const SubscriptionForm: React.FC<ISubscriptionDetailsFormProps> = (
 
   return (
     <>
-      <header>Select Your Subscription</header>
+      <header className={classes.header}>Select Your Subscription</header>
       <Formik {...formProps}>{renderForm}</Formik>
     </>
   );

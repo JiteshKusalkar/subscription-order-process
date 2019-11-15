@@ -1,8 +1,9 @@
 import React from "react";
 import Button from "@material-ui/core/Button";
 import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { Formik } from "formik";
+import { Formik, FormikProps } from "formik";
 import { TextField, Grid, MenuItem } from "@material-ui/core";
+import * as Yup from "yup";
 
 interface ICreditCardDetailsFormProps {
   formData: ICreditCardDetails;
@@ -25,10 +26,31 @@ const useStyles = makeStyles((theme: Theme) =>
     footer: {
       display: "flex",
       justifyContent: "space-between",
-      padding: 30
+      padding: "30px 0"
+    },
+    header: {
+      textAlign: "center"
+    },
+    expDate: {
+      width: 100
+    },
+    cvv: {
+      width: 200
     }
   })
 );
+
+const validationSchema = Yup.object().shape({
+  number: Yup.string()
+    .matches(/^\d{16}$/, "16 digits required")
+    .required("Required"),
+  expMonth: Yup.string().required("Required"),
+  expYear: Yup.string().required("Required"),
+  cvv: Yup.string()
+    .min(3, "Min. 3 characters")
+    .max(4, "Max. 4 characters")
+    .required("Required")
+});
 
 const CreditCardDetailsForm: React.FC<ICreditCardDetailsFormProps> = (
   props: ICreditCardDetailsFormProps
@@ -37,39 +59,47 @@ const CreditCardDetailsForm: React.FC<ICreditCardDetailsFormProps> = (
   const classes = useStyles();
   const formProps = {
     initialValues: formData,
+    validationSchema,
     onSubmit: (values: ICreditCardDetails) =>
       onSubmit("creditCardDetails", values)
   };
 
   const options = {
     months: [
-      { value: 0, label: "January" },
-      { value: 1, label: "February" },
-      { value: 2, label: "March" },
-      { value: 3, label: "April" },
-      { value: 4, label: "May" },
-      { value: 5, label: "June" },
-      { value: 6, label: "July" },
-      { value: 7, label: "August" },
-      { value: 8, label: "September" },
-      { value: 9, label: "October" },
-      { value: 10, label: "November" },
-      { value: 11, label: "December" }
+      { value: "01", label: "January(01)" },
+      { value: "02", label: "February(02)" },
+      { value: "03", label: "March(03)" },
+      { value: "04", label: "April(04)" },
+      { value: "05", label: "May(05)" },
+      { value: "06", label: "June(06)" },
+      { value: "07", label: "July(07)" },
+      { value: "08", label: "August(08)" },
+      { value: "09", label: "September(09)" },
+      { value: "10", label: "October(10)" },
+      { value: "11", label: "November(11)" },
+      { value: "12", label: "December(12)" }
     ],
     years: Array.apply(null, Array(numberOfFutureYears)).reduce(
       (acc: IMenuOption[], curr: any, index: number) => [
         ...acc,
         {
-          value: new Date().getFullYear() + index,
-          label: new Date().getFullYear() + index
+          value: `${new Date().getFullYear() + index}`,
+          label: `${new Date().getFullYear() + index}`
         }
       ],
       []
     )
   };
 
-  const renderForm = (formProps: any) => {
-    const { values, handleChange, handleSubmit } = formProps;
+  const renderForm = (formProps: FormikProps<ICreditCardDetails>) => {
+    const {
+      errors,
+      values,
+      touched,
+      handleChange,
+      handleSubmit,
+      setTouched
+    } = formProps;
     return (
       <form noValidate autoComplete="off" onSubmit={handleSubmit}>
         <Grid item xs={12}>
@@ -79,21 +109,30 @@ const CreditCardDetailsForm: React.FC<ICreditCardDetailsFormProps> = (
             name="number"
             required
             className={classes.textField}
-            value={values.lastName || ""}
+            value={values.number || ""}
             onChange={handleChange}
-            helperText="Credit Card Number"
+            onBlur={() => setTouched({ ...touched, number: true })}
+            helperText={touched.number ? errors.number : ""}
+            error={touched.number && !!errors.number}
             margin="normal"
+            fullWidth
           />
           <TextField
-            id="month"
+            id="expMonth"
             select
             label="Month"
-            name="month"
+            name="expMonth"
             required
             className={classes.textField}
-            value={values.expDate.month || ""}
+            value={values.expMonth || ""}
             onChange={handleChange}
+            onBlur={() => setTouched({ ...touched, expMonth: true })}
+            helperText={touched.expMonth ? errors.expMonth : ""}
+            error={touched.expMonth && !!errors.expMonth}
             margin="normal"
+            inputProps={{
+              className: classes.expDate
+            }}
           >
             {options.months.map((month: IMenuOption) => (
               <MenuItem key={month.value} value={month.value}>
@@ -102,15 +141,21 @@ const CreditCardDetailsForm: React.FC<ICreditCardDetailsFormProps> = (
             ))}
           </TextField>
           <TextField
-            id="year"
+            id="expYear"
             select
             label="Year"
-            name="year"
+            name="expYear"
             required
             className={classes.textField}
-            value={values.expDate.year || ""}
+            value={values.expYear || ""}
             onChange={handleChange}
+            onBlur={() => setTouched({ ...touched, expYear: true })}
+            helperText={touched.expYear ? errors.expYear : ""}
+            error={touched.expYear && !!errors.expYear}
             margin="normal"
+            inputProps={{
+              className: classes.expDate
+            }}
           >
             {options.years.map((year: IMenuOption) => (
               <MenuItem key={year.value} value={year.value}>
@@ -127,7 +172,13 @@ const CreditCardDetailsForm: React.FC<ICreditCardDetailsFormProps> = (
             className={classes.textField}
             value={values.cvv || ""}
             onChange={handleChange}
+            onBlur={() => setTouched({ ...touched, cvv: true })}
+            helperText={touched.cvv ? errors.cvv : ""}
+            error={touched.cvv && !!errors.cvv}
             margin="normal"
+            inputProps={{
+              className: classes.cvv
+            }}
           />
         </Grid>
         <Grid item xs={12} className={classes.footer}>
@@ -142,7 +193,7 @@ const CreditCardDetailsForm: React.FC<ICreditCardDetailsFormProps> = (
 
   return (
     <>
-      <header>Payment Details</header>
+      <header className={classes.header}>Payment Details</header>
       <Formik {...formProps}>{renderForm}</Formik>
     </>
   );

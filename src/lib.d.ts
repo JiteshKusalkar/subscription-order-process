@@ -13,10 +13,8 @@ declare interface IUserDetails {
 
 declare interface ICreditCardDetails {
   number: string;
-  expDate: {
-    month: number | null;
-    year: number;
-  };
+  expMonth: string;
+  expYear: string;
   cvv: string;
 }
 
