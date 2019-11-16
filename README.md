@@ -2,6 +2,23 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Available Scripts
 
+
+### About the project.
+
+A progressive form for cloud music subscription process. It gathers information through 4 types forms namely - **Subscription details > Shipping details > Payment details > Confirmation**.
+
+Please note this app is made with **Node v12.10.0 and Yarn v1.12.1. Please use `yarn install` to install packages.** Other commands are listed below.
+
+Tech Stack used: **React, Typescript, Material-UI, JSS, SCSS, Formik, Yup.** Didn't use Redux for such small application.
+
+**Additional features:**
+* Clear next form while going back.
+* Additional validations to Credit Card number (only 16 digits allowed) and cvv (password field with no blank spaces allowed)
+* Enabled environment variables. Just add `.env` file in parallel with `./src` with following value
+```REACT_APP_TERMS=http://generator.lorem-ipsum.info/terms-and-conditions```
+* Added a custom theme.
+* Added information of upfront payment.
+
 In the project directory, you can run:
 
 ### `yarn start`
