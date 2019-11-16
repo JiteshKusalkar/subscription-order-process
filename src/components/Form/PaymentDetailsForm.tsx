@@ -1,13 +1,13 @@
-import React from "react";
-import Button from "@material-ui/core/Button";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { Formik, FormikProps } from "formik";
-import { TextField, Grid, MenuItem } from "@material-ui/core";
-import * as Yup from "yup";
+import React from 'react';
+import Button from '@material-ui/core/Button';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Formik, FormikProps } from 'formik';
+import { TextField, Grid, MenuItem, Typography } from '@material-ui/core';
+import * as Yup from 'yup';
 
-interface ICreditCardDetailsFormProps {
-  formData: ICreditCardDetails;
-  onSubmit: (type: string, data: ICreditCardDetails) => void;
+interface IPaymentDetailsFormProps {
+  formData: IPaymentDetails;
+  onSubmit: (type: string, data: IPaymentDetails) => void;
   onPrev: (e?: React.SyntheticEvent<HTMLButtonElement>) => void;
 }
 
@@ -16,23 +16,20 @@ const numberOfFutureYears = 50;
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
-      display: "flex",
-      flexWrap: "wrap"
+      display: 'flex',
+      flexWrap: 'wrap'
     },
     textField: {
       marginLeft: theme.spacing(1),
       marginRight: theme.spacing(1)
     },
     footer: {
-      display: "flex",
-      justifyContent: "space-between",
-      padding: "30px 0"
-    },
-    header: {
-      textAlign: "center"
+      display: 'flex',
+      justifyContent: 'space-between',
+      padding: '30px 0'
     },
     expDate: {
-      width: 100
+      width: 150
     },
     cvv: {
       width: 200
@@ -42,42 +39,43 @@ const useStyles = makeStyles((theme: Theme) =>
 
 const validationSchema = Yup.object().shape({
   number: Yup.string()
-    .matches(/^\d{16}$/, "16 digits required")
-    .required("Required"),
-  expMonth: Yup.string().required("Required"),
-  expYear: Yup.string().required("Required"),
+    .matches(/^\d{16}$/, '16 digits required')
+    .required('Required'),
+  expMonth: Yup.string().required('Required'),
+  expYear: Yup.string().required('Required'),
   cvv: Yup.string()
-    .min(3, "Min. 3 characters")
-    .max(4, "Max. 4 characters")
-    .required("Required")
+    .min(3, 'Min. 3 characters')
+    .max(4, 'Max. 4 characters')
+    .matches(/^\S*$/, 'No white spaces')
+    .required('Required')
 });
 
-const CreditCardDetailsForm: React.FC<ICreditCardDetailsFormProps> = (
-  props: ICreditCardDetailsFormProps
+const PaymentDetailsForm: React.FC<IPaymentDetailsFormProps> = (
+  props: IPaymentDetailsFormProps
 ) => {
   const { formData, onSubmit, onPrev } = props;
   const classes = useStyles();
   const formProps = {
     initialValues: formData,
     validationSchema,
-    onSubmit: (values: ICreditCardDetails) =>
-      onSubmit("creditCardDetails", values)
+    onSubmit: (values: IPaymentDetails) =>
+      onSubmit('paymentDetails', values)
   };
 
   const options = {
     months: [
-      { value: "01", label: "January(01)" },
-      { value: "02", label: "February(02)" },
-      { value: "03", label: "March(03)" },
-      { value: "04", label: "April(04)" },
-      { value: "05", label: "May(05)" },
-      { value: "06", label: "June(06)" },
-      { value: "07", label: "July(07)" },
-      { value: "08", label: "August(08)" },
-      { value: "09", label: "September(09)" },
-      { value: "10", label: "October(10)" },
-      { value: "11", label: "November(11)" },
-      { value: "12", label: "December(12)" }
+      { value: '01', label: 'January(01)' },
+      { value: '02', label: 'February(02)' },
+      { value: '03', label: 'March(03)' },
+      { value: '04', label: 'April(04)' },
+      { value: '05', label: 'May(05)' },
+      { value: '06', label: 'June(06)' },
+      { value: '07', label: 'July(07)' },
+      { value: '08', label: 'August(08)' },
+      { value: '09', label: 'September(09)' },
+      { value: '10', label: 'October(10)' },
+      { value: '11', label: 'November(11)' },
+      { value: '12', label: 'December(12)' }
     ],
     years: Array.apply(null, Array(numberOfFutureYears)).reduce(
       (acc: IMenuOption[], curr: any, index: number) => [
@@ -91,7 +89,7 @@ const CreditCardDetailsForm: React.FC<ICreditCardDetailsFormProps> = (
     )
   };
 
-  const renderForm = (formProps: FormikProps<ICreditCardDetails>) => {
+  const renderForm = (formProps: FormikProps<IPaymentDetails>) => {
     const {
       errors,
       values,
@@ -101,35 +99,35 @@ const CreditCardDetailsForm: React.FC<ICreditCardDetailsFormProps> = (
       setTouched
     } = formProps;
     return (
-      <form noValidate autoComplete="off" onSubmit={handleSubmit}>
+      <form noValidate autoComplete='off' onSubmit={handleSubmit}>
         <Grid item xs={12}>
           <TextField
-            id="number"
-            label="Credit Card Number"
-            name="number"
+            id='number'
+            label='Credit Card Number'
+            name='number'
             required
             className={classes.textField}
-            value={values.number || ""}
+            value={values.number || ''}
             onChange={handleChange}
             onBlur={() => setTouched({ ...touched, number: true })}
-            helperText={touched.number ? errors.number : ""}
+            helperText={touched.number ? errors.number : ''}
             error={touched.number && !!errors.number}
-            margin="normal"
+            margin='normal'
             fullWidth
           />
           <TextField
-            id="expMonth"
+            id='expMonth'
             select
-            label="Month"
-            name="expMonth"
+            label='Month'
+            name='expMonth'
             required
             className={classes.textField}
-            value={values.expMonth || ""}
+            value={values.expMonth || ''}
             onChange={handleChange}
             onBlur={() => setTouched({ ...touched, expMonth: true })}
-            helperText={touched.expMonth ? errors.expMonth : ""}
+            helperText={touched.expMonth ? errors.expMonth : ''}
             error={touched.expMonth && !!errors.expMonth}
-            margin="normal"
+            margin='normal'
             inputProps={{
               className: classes.expDate
             }}
@@ -141,18 +139,18 @@ const CreditCardDetailsForm: React.FC<ICreditCardDetailsFormProps> = (
             ))}
           </TextField>
           <TextField
-            id="expYear"
+            id='expYear'
             select
-            label="Year"
-            name="expYear"
+            label='Year'
+            name='expYear'
             required
             className={classes.textField}
-            value={values.expYear || ""}
+            value={values.expYear || ''}
             onChange={handleChange}
             onBlur={() => setTouched({ ...touched, expYear: true })}
-            helperText={touched.expYear ? errors.expYear : ""}
+            helperText={touched.expYear ? errors.expYear : ''}
             error={touched.expYear && !!errors.expYear}
-            margin="normal"
+            margin='normal'
             inputProps={{
               className: classes.expDate
             }}
@@ -164,18 +162,18 @@ const CreditCardDetailsForm: React.FC<ICreditCardDetailsFormProps> = (
             ))}
           </TextField>
           <TextField
-            id="cvv"
-            label="CVV"
-            name="cvv"
+            id='cvv'
+            label='CVV'
+            name='cvv'
             required
-            type="password"
+            type='password'
             className={classes.textField}
-            value={values.cvv || ""}
+            value={values.cvv || ''}
             onChange={handleChange}
             onBlur={() => setTouched({ ...touched, cvv: true })}
-            helperText={touched.cvv ? errors.cvv : ""}
+            helperText={touched.cvv ? errors.cvv : ''}
             error={touched.cvv && !!errors.cvv}
-            margin="normal"
+            margin='normal'
             inputProps={{
               className: classes.cvv
             }}
@@ -183,7 +181,7 @@ const CreditCardDetailsForm: React.FC<ICreditCardDetailsFormProps> = (
         </Grid>
         <Grid item xs={12} className={classes.footer}>
           <Button onClick={onPrev}>Back</Button>
-          <Button variant="contained" color="primary" type="submit">
+          <Button variant='contained' color='primary' type='submit'>
             Next
           </Button>
         </Grid>
@@ -193,10 +191,12 @@ const CreditCardDetailsForm: React.FC<ICreditCardDetailsFormProps> = (
 
   return (
     <>
-      <header className={classes.header}>Payment Details</header>
+      <Typography variant='h6' gutterBottom>
+        Payment Details
+      </Typography>
       <Formik {...formProps}>{renderForm}</Formik>
     </>
   );
 };
 
-export default CreditCardDetailsForm;
+export default PaymentDetailsForm;

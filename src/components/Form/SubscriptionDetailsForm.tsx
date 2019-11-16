@@ -1,9 +1,9 @@
-import React from "react";
-import Button from "@material-ui/core/Button";
-import { createStyles, makeStyles, Theme } from "@material-ui/core/styles";
-import { Formik, FormikProps } from "formik";
-import { MenuItem, TextField, Grid } from "@material-ui/core";
-import * as Yup from "yup";
+import React from 'react';
+import Button from '@material-ui/core/Button';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
+import { Formik, FormikProps } from 'formik';
+import { MenuItem, TextField, Grid, Typography } from '@material-ui/core';
+import * as Yup from 'yup';
 
 interface ISubscriptionDetailsFormProps {
   formData: ISubscriptionDetails;
@@ -14,29 +14,26 @@ interface ISubscriptionDetailsFormProps {
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     container: {
-      display: "flex",
-      flexWrap: "wrap"
+      display: 'flex',
+      flexWrap: 'wrap'
     },
     textField: {
       marginLeft: theme.spacing(1),
       marginRight: theme.spacing(1),
-      width: '30%',
+      width: '30%'
     },
     footer: {
-      display: "flex",
-      justifyContent: "space-between",
-      padding: "30px 0"
-    },
-    header: {
-      textAlign: "center"
+      display: 'flex',
+      justifyContent: 'space-between',
+      padding: '30px 0'
     }
   })
 );
 
 const validationSchema = Yup.object().shape({
-  duration: Yup.number().required("Require"),
-  size: Yup.number().required("Required"),
-  payment: Yup.string().required("Required")
+  duration: Yup.number().required('Require'),
+  size: Yup.number().required('Required'),
+  upfrontPayment: Yup.string().required('Required')
 });
 
 const SubscriptionForm: React.FC<ISubscriptionDetailsFormProps> = (
@@ -48,44 +45,54 @@ const SubscriptionForm: React.FC<ISubscriptionDetailsFormProps> = (
     initialValues: formData,
     validationSchema,
     onSubmit: (values: ISubscriptionDetails) =>
-      onSubmit("subscriptionDetails", values)
+      onSubmit('subscriptionDetails', values)
   };
 
   const options = {
     duration: [
-      { value: 3, label: "3 Months" },
-      { value: 6, label: "6 Months" },
-      { value: 12, label: "12 Months" }
+      { value: 3, label: '3 Months' },
+      { value: 6, label: '6 Months' },
+      { value: 12, label: '12 Months' }
     ],
     size: [
-      { value: 3, label: "3 GB" },
-      { value: 5, label: "5 GB" },
-      { value: 10, label: "10 GB" },
-      { value: 20, label: "20 GB" },
-      { value: 30, label: "30 GB" },
-      { value: 50, label: "50 GB" }
+      { value: 3, label: '3 GB' },
+      { value: 5, label: '5 GB' },
+      { value: 10, label: '10 GB' },
+      { value: 20, label: '20 GB' },
+      { value: 30, label: '30 GB' },
+      { value: 50, label: '50 GB' }
     ],
-    payment: [{ value: "yes", label: "Yes" }, { value: "no", label: "No" }]
+    upfrontPayment: [
+      { value: 'yes', label: 'Yes' },
+      { value: 'no', label: 'No' }
+    ]
   };
 
   const renderForm = (formProps: FormikProps<ISubscriptionDetails>) => {
-    const { errors, values, touched, handleChange, handleSubmit, setTouched } = formProps;
+    const {
+      errors,
+      values,
+      touched,
+      handleChange,
+      handleSubmit,
+      setTouched
+    } = formProps;
     return (
-      <form noValidate autoComplete="off" onSubmit={handleSubmit}>
+      <form noValidate autoComplete='off' onSubmit={handleSubmit}>
         <Grid item xs={12}>
           <TextField
-            id="duration"
+            id='duration'
             select
-            label="Duration"
-            name="duration"
+            label='Duration'
+            name='duration'
             required
             className={classes.textField}
-            value={values ? values.duration : ""}
+            value={values ? values.duration : ''}
             onChange={handleChange}
             onBlur={() => setTouched({ ...touched, duration: true })}
-            helperText={touched.duration ? errors.duration : ""}
+            helperText={touched.duration ? errors.duration : ''}
             error={touched.duration && !!errors.duration}
-            margin="normal"
+            margin='normal'
           >
             {options.duration.map(duration => (
               <MenuItem key={duration.value} value={duration.value}>
@@ -94,17 +101,18 @@ const SubscriptionForm: React.FC<ISubscriptionDetailsFormProps> = (
             ))}
           </TextField>
           <TextField
-            id="size"
+            id='size'
             select
-            label="Size"
-            name="size"
+            label='Size'
+            name='size'
             required
             className={classes.textField}
-            value={values ? values.size : ""}
+            value={values ? values.size : ''}
+            onChange={handleChange}
             onBlur={() => setTouched({ ...touched, size: true })}
-            helperText={touched.size ? errors.size : ""}
+            helperText={touched.size ? errors.size : ''}
             error={touched.size && !!errors.size}
-            margin="normal"
+            margin='normal'
           >
             {options.size.map(size => (
               <MenuItem key={size.value} value={size.value}>
@@ -113,29 +121,32 @@ const SubscriptionForm: React.FC<ISubscriptionDetailsFormProps> = (
             ))}
           </TextField>
           <TextField
-            id="payment"
+            id='upfrontPayment'
             select
-            label="Upfront payment"
-            name="payment"
+            label='Upfront payment'
+            name='upfrontPayment'
             required
             className={classes.textField}
-            value={values ? values.payment : false}
+            value={values ? values.upfrontPayment : false}
             onChange={handleChange}
-            onBlur={() => setTouched({ ...touched, payment: true })}
-            helperText={touched.payment ? errors.payment : ""}
-            error={touched.payment && !!errors.payment}
-            margin="normal"
+            onBlur={() => setTouched({ ...touched, upfrontPayment: true })}
+            helperText={touched.upfrontPayment ? errors.upfrontPayment : ''}
+            error={touched.upfrontPayment && !!errors.upfrontPayment}
+            margin='normal'
           >
-            {options.payment.map(payment => (
-              <MenuItem key={payment.label} value={`${payment.value}`}>
-                {payment.label}
+            {options.upfrontPayment.map(upfrontPayment => (
+              <MenuItem
+                key={upfrontPayment.label}
+                value={`${upfrontPayment.value}`}
+              >
+                {upfrontPayment.label}
               </MenuItem>
             ))}
           </TextField>
         </Grid>
         <Grid item xs={12} className={classes.footer}>
           <Button onClick={onPrev}>Back</Button>
-          <Button variant="contained" color="primary" type="submit">
+          <Button variant='contained' color='primary' type='submit'>
             Next
           </Button>
         </Grid>
@@ -145,7 +156,10 @@ const SubscriptionForm: React.FC<ISubscriptionDetailsFormProps> = (
 
   return (
     <>
-      <header className={classes.header}>Select Your Subscription</header>
+      <Typography variant='h6'>Select your subscription</Typography>
+      <Typography variant='subtitle2' gutterBottom>
+        Save flat 10% with an upfront payment.
+      </Typography>
       <Formik {...formProps}>{renderForm}</Formik>
     </>
   );

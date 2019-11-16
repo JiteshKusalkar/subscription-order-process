@@ -1,17 +1,17 @@
 declare interface ISubscriptionDetails {
   duration: number;
   size: number;
-  payment: "yes" | "no" | string;
+  upfrontPayment: string;
 }
 
-declare interface IUserDetails {
+declare interface IShippingDetails {
   lastName: string;
   firstName: string;
   email: string;
   streetAddress: string;
 }
 
-declare interface ICreditCardDetails {
+declare interface IPaymentDetails {
   number: string;
   expMonth: string;
   expYear: string;
@@ -20,8 +20,8 @@ declare interface ICreditCardDetails {
 
 declare interface IFormData {
   subscriptionDetails: ISubscriptionDetails;
-  userDetails: IUserDetails;
-  creditCardDetails: ICreditCardDetails;
+  shippingDetails: IShippingDetails;
+  paymentDetails: IPaymentDetails;
 }
 
 declare interface IMenuOption {
