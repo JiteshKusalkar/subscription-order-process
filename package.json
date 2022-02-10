@@ -39,6 +39,6 @@
   },
   "devDependencies": {
     "@types/yup": "^0.26.24",
-    "node-sass": "^4.13.0"
+    "node-sass": "^7.0.0"
   }
 }
